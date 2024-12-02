@@ -16,7 +16,9 @@ response = requests.get(url)
 
 # Vérifie si la requête a fonctionné
 if response.status_code == 200:
-    st.code(response.text, language='python')  # Affiche le code Python depuis GitHub
+    # Affiche le code Python depuis GitHub (sans l'exécuter)
+    st.code(response.text, language='python')  # Affiche le code en tant que texte brut
 else:
     st.error("Erreur de chargement du fichier GitHub.")
+
 
