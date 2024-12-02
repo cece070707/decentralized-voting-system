@@ -61,51 +61,38 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# News section
-st.subheader("Latest News")
+# First page - Voting options
+if not st.session_state.has_voted:
+    vote_option = st.radio(
+        "Who would you like to choose?",
+        ("Mr./Ms. A", "Mr./Ms. B")
+    )
 
-# Ask the user to input a keyword (e.g., "USA elections")
-keyword = st.text_input("Enter a keyword to get the latest news", "USA elections")
+    # Button to vote
+    if st.button("Vote"):
+        if vote_option == "Mr./Ms. A":
+            st.session_state.votes_A += 1
+        elif vote_option == "Mr./Ms. B":
+            st.session_state.votes_B += 1
 
-if keyword:
-    params = {
-        'q': keyword,  # The query word for the news search
-        'apiKey': API_KEY,
-        'pageSize': 5  # Limit the number of articles shown
-    }
+        # Mark that the user has voted to prevent voting again
+        st.session_state.has_voted = True
 
-    # Get the news data
-    response = requests.get(BASE_URL, params=params)
+        # After voting, redirect to the results page
+        st.experimental_rerun()
 
-    if response.status_code == 200:
-        data = response.json()
+# Second page - After voting
+if st.session_state.has_voted:
+    # Display the vote results
+    st.write("Thank you for voting! Here are the current election results:")
 
-        if data['totalResults'] > 0:
-            st.write(f"Found {data['totalResults']} articles related to '{keyword}':")
-            for article in data['articles']:
-                st.write(f"**{article['title']}**")
-                st.write(f"[Read more]({article['url']})")
-                st.write(f"{article['description']}")
-                st.write("---")
-        else:
-            st.write(f"No articles found for '{keyword}'")
-    else:
-        st.error("Failed to retrieve news. Please try again later.")
-
-# If voting period has expired, show a message and prevent voting
-if voting_period_expired():
-    st.write("The voting period has ended. You can no longer vote.")
-    st.write("Here are the current election results:")
-
-    # Display results if voting period has ended
     total_votes = st.session_state.votes_A + st.session_state.votes_B
     percent_A = get_percentage(st.session_state.votes_A, total_votes)
     percent_B = get_percentage(st.session_state.votes_B, total_votes)
 
-    # Display the results with dynamic color styling
     st.subheader("Vote Results")
     st.write(f"Total votes: {total_votes}")
-    
+
     if percent_A > percent_B:
         st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
         st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
@@ -121,73 +108,33 @@ if voting_period_expired():
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     st.pyplot()
 
-else:
-    # Display countdown timer
-    now = datetime.datetime.now()
-    delta = st.session_state.start_date + datetime.timedelta(days=14) - now
-    if delta.days > 0:
-        st.write(f"Time left to vote: {delta.days} days, {delta.seconds // 3600} hours, {(delta.seconds // 60) % 60} minutes")
-    else:
-        st.write("The voting period has ended.")
+    # News section
+    st.subheader("Latest News")
 
-    # Voting options (only if the user hasn't voted yet and voting is still open)
-    if st.session_state.has_voted:
-        st.write("You have already voted. Here are the current election results:")
-        total_votes = st.session_state.votes_A + st.session_state.votes_B
-        percent_A = get_percentage(st.session_state.votes_A, total_votes)
-        percent_B = get_percentage(st.session_state.votes_B, total_votes)
+    # Ask the user to input a keyword (e.g., "USA elections")
+    keyword = st.text_input("Enter a keyword to get the latest news", "USA elections")
 
-        # Show the results after voting
-        st.subheader("Vote Results")
-        st.write(f"Total votes: {total_votes}")
-        
-        if percent_A > percent_B:
-            st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
-            st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
-        else:
-            st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
-            st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
+    if keyword:
+        params = {
+            'q': keyword,  # The query word for the news search
+            'apiKey': API_KEY,
+            'pageSize': 5  # Limit the number of articles shown
+        }
 
-        # Pie chart for visual representation
-        labels = ["Mr./Ms. A", "Mr./Ms. B"]
-        sizes = [st.session_state.votes_A, st.session_state.votes_B]
-        colors = ['#ff9999','#66b3ff']
-        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, shadow=True)
-        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-        st.pyplot()
+        # Get the news data
+        response = requests.get(BASE_URL, params=params)
 
-    else:
-        # If the user hasn't voted yet
-        vote_option = st.radio(
-            "Who would you like to choose?",
-            ("Mr./Ms. A", "Mr./Ms. B")
-        )
+        if response.status_code == 200:
+            data = response.json()
 
-        # Button to vote
-        if st.button("Vote"):
-            if vote_option == "Mr./Ms. A":
-                st.session_state.votes_A += 1
-            elif vote_option == "Mr./Ms. B":
-                st.session_state.votes_B += 1
-
-            # Mark that the user has voted to prevent voting again
-            st.session_state.has_voted = True
-
-            # After voting, display the results
-            total_votes = st.session_state.votes_A + st.session_state.votes_B
-            percent_A = get_percentage(st.session_state.votes_A, total_votes)
-            percent_B = get_percentage(st.session_state.votes_B, total_votes)
-
-            # Display the results
-            st.subheader("Vote Results")
-            st.write(f"Total votes: {total_votes}")
-
-            if percent_A > percent_B:
-                st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
-                st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
+            if data['totalResults'] > 0:
+                st.write(f"Found {data['totalResults']} articles related to '{keyword}':")
+                for article in data['articles']:
+                    st.write(f"**{article['title']}**")
+                    st.write(f"[Read more]({article['url']})")
+                    st.write(f"{article['description']}")
+                    st.write("---")
             else:
-                st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
-                st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
-
-            # Display a confirmation message for voting
-            st.success("Thank you for voting!")
+                st.write(f"No articles found for '{keyword}'")
+        else:
+            st.error("Failed to retrieve news. Please try again later.")
