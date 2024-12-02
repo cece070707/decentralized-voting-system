@@ -1,11 +1,12 @@
 import streamlit as st
 import datetime
+import random
 import matplotlib.pyplot as plt
 
 # Initializing vote variables (if not already initialized)
 if "votes_A" not in st.session_state:
-    st.session_state.votes_A = 0
-    st.session_state.votes_B = 0
+    st.session_state.votes_A = random.randint(1, 100)  # Random starting votes for A
+    st.session_state.votes_B = random.randint(1, 100)  # Random starting votes for B
 if "has_voted" not in st.session_state:
     st.session_state.has_voted = False  # Variable to ensure only one vote
 if "start_date" not in st.session_state:
@@ -154,3 +155,4 @@ else:
 
             # Display a confirmation message for voting
             st.success("Thank you for voting!")
+
