@@ -1,14 +1,14 @@
 import streamlit as st
 import datetime
 
-# Initialize vote variables (if not already initialized)
+# Initializing vote variables (if not already initialized)
 if "votes_A" not in st.session_state:
     st.session_state.votes_A = 0
     st.session_state.votes_B = 0
 if "has_voted" not in st.session_state:
     st.session_state.has_voted = False  # Variable to ensure only one vote
 if "start_date" not in st.session_state:
-    st.session_state.start_date = datetime.datetime.now()  # Set the start date
+    st.session_state.start_date = datetime.datetime.now()  # Set the start date for voting
 
 # Calculate percentage of votes
 def get_percentage(candidate_votes, total_votes):
@@ -43,32 +43,48 @@ if voting_period_expired():
     st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
 else:
     # Voting options (only if the user hasn't voted yet and voting is still open)
-    vote_option = st.radio(
-        "Who would you like to choose?",
-        ("Mr./Ms. A", "Mr./Ms. B")
-    )
-
-    # Button to vote
-    if st.button("Vote"):
-        if vote_option == "Mr./Ms. A":
-            st.session_state.votes_A += 1
-        elif vote_option == "Mr./Ms. B":
-            st.session_state.votes_B += 1
-
-        # Mark that the user has voted to prevent voting again
-        st.session_state.has_voted = True
-
-        # After voting, display the results
+    if st.session_state.has_voted:
+        st.write("You have already voted. Here are the current election results:")
         total_votes = st.session_state.votes_A + st.session_state.votes_B
         percent_A = get_percentage(st.session_state.votes_A, total_votes)
         percent_B = get_percentage(st.session_state.votes_B, total_votes)
 
-        # Display the results
+        # Show the results after voting
         st.subheader("Vote Results")
         st.write(f"Total votes: {total_votes}")
         st.write(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)")
         st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
+    else:
+        # If the user hasn't voted yet
+        vote_option = st.radio(
+            "Who would you like to choose?",
+            ("Mr./Ms. A", "Mr./Ms. B")
+        )
 
-        # Display a confirmation message for voting
-        st.success("Thank you for voting!")
+        # Button to vote
+        if st.button("Vote"):
+            if vote_option == "Mr./Ms. A":
+                st.session_state.votes_A += 1
+            elif vote_option == "Mr./Ms. B":
+                st.session_state.votes_B += 1
+
+            # Mark that the user has voted to prevent voting again
+            st.session_state.has_voted = True
+
+            # After voting, display the results
+            total_votes = st.session_state.votes_A + st.session_state.votes_B
+            percent_A = get_percentage(st.session_state.votes_A, total_votes)
+            percent_B = get_percentage(st.session_state.votes_B, total_votes)
+
+            # Display the results
+            st.subheader("Vote Results")
+            st.write(f"Total votes: {total_votes}")
+            st.write(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)")
+            st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
+
+            # Display a confirmation message for voting
+            st.success("Thank you for voting!")
+
+
+
 
