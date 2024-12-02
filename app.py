@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+import matplotlib.pyplot as plt
 
 # Initializing vote variables (if not already initialized)
 if "votes_A" not in st.session_state:
@@ -26,6 +27,34 @@ def voting_period_expired():
 st.title("Election: Mr./Ms. A vs Mr./Ms. B")
 st.write("Choose your candidate, and we will show the vote results after you cast your vote.")
 
+# Custom CSS styling for improved appearance
+st.markdown("""
+    <style>
+    .stButton>button {
+        background-color: #4CAF50;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+    }
+    .stRadio>div>label>div {
+        font-size: 18px;
+        color: #333;
+    }
+    .stAlert {
+        background-color: #e6f7e6;
+        color: #2e6e2e;
+        font-weight: bold;
+    }
+    .stMarkdown {
+        font-size: 18px;
+        color: #333;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # If voting period has expired, show a message and prevent voting
 if voting_period_expired():
     st.write("The voting period has ended. You can no longer vote.")
@@ -36,7 +65,7 @@ if voting_period_expired():
     percent_A = get_percentage(st.session_state.votes_A, total_votes)
     percent_B = get_percentage(st.session_state.votes_B, total_votes)
 
-    # Display the results with colors
+    # Display the results with dynamic color styling
     st.subheader("Vote Results")
     st.write(f"Total votes: {total_votes}")
     
@@ -46,6 +75,14 @@ if voting_period_expired():
     else:
         st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
         st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
+
+    # Pie chart for visual representation
+    labels = ["Mr./Ms. A", "Mr./Ms. B"]
+    sizes = [st.session_state.votes_A, st.session_state.votes_B]
+    colors = ['#ff9999','#66b3ff']
+    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, shadow=True)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    st.pyplot()
 
 else:
     # Display countdown timer
@@ -73,6 +110,14 @@ else:
         else:
             st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
             st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
+
+        # Pie chart for visual representation
+        labels = ["Mr./Ms. A", "Mr./Ms. B"]
+        sizes = [st.session_state.votes_A, st.session_state.votes_B]
+        colors = ['#ff9999','#66b3ff']
+        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, shadow=True)
+        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        st.pyplot()
 
     else:
         # If the user hasn't voted yet
@@ -109,8 +154,3 @@ else:
 
             # Display a confirmation message for voting
             st.success("Thank you for voting!")
-
-
-
-
-
