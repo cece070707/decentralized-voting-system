@@ -61,6 +61,37 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# News section
+st.subheader("Latest News")
+
+# Ask the user to input a keyword (e.g., "USA elections")
+keyword = st.text_input("Enter a keyword to get the latest news", "USA elections")
+
+if keyword:
+    params = {
+        'q': keyword,  # The query word for the news search
+        'apiKey': API_KEY,
+        'pageSize': 5  # Limit the number of articles shown
+    }
+
+    # Get the news data
+    response = requests.get(BASE_URL, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        if data['totalResults'] > 0:
+            st.write(f"Found {data['totalResults']} articles related to '{keyword}':")
+            for article in data['articles']:
+                st.write(f"**{article['title']}**")
+                st.write(f"[Read more]({article['url']})")
+                st.write(f"{article['description']}")
+                st.write("---")
+        else:
+            st.write(f"No articles found for '{keyword}'")
+    else:
+        st.error("Failed to retrieve news. Please try again later.")
+
 # If voting period has expired, show a message and prevent voting
 if voting_period_expired():
     st.write("The voting period has ended. You can no longer vote.")
@@ -160,35 +191,3 @@ else:
 
             # Display a confirmation message for voting
             st.success("Thank you for voting!")
-
-        # News section
-        st.subheader("Latest News")
-
-        # Ask the user to input a keyword (e.g., "USA elections")
-        keyword = st.text_input("Enter a keyword to get the latest news", "USA elections")
-
-        if keyword:
-            params = {
-                'q': keyword,  # The query word for the news search
-                'apiKey': API_KEY,
-                'pageSize': 5  # Limit the number of articles shown
-            }
-
-            # Get the news data
-            response = requests.get(BASE_URL, params=params)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                if data['totalResults'] > 0:
-                    st.write(f"Found {data['totalResults']} articles related to '{keyword}':")
-                    for article in data['articles']:
-                        st.write(f"**{article['title']}**")
-                        st.write(f"[Read more]({article['url']})")
-                        st.write(f"{article['description']}")
-                        st.write("---")
-                else:
-                    st.write(f"No articles found for '{keyword}'")
-            else:
-                st.error("Failed to retrieve news. Please try again later.")
-
