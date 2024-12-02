@@ -1,40 +1,22 @@
 import streamlit as st
-from web3 import Web3
+import requests
 
-# Connexion à Ethereum via Web3 (assurez-vous d'utiliser votre propre provider, comme Infura ou Alchemy)
-w3 = Web3(Web3.HTTPProvider("https://rinkeby.infura.io/v3/YOUR_INFURA_PROJECT_ID"))
+# Affiche un titre
+st.title("Interface de mon code GitHub")
 
-# Adresse du contrat déployé sur le testnet (par exemple, Rinkeby)
-contract_address = "VOTRE_ADRESSE_CONTRAT"
-abi = [...]  # Le ABI de votre contrat, vous devez le remplacer ici
+# Affiche une section pour montrer le code GitHub
+st.subheader("Code GitHub Exécuté")
 
-# Initialisation du contrat
-contract = w3.eth.contract(address=contract_address, abi=abi)
+# Exemple : afficher le contenu d'un fichier sur GitHub
+# Remplace par le lien direct vers ton fichier sur GitHub
+url = "https://raw.githubusercontent.com/cece070707/decentralized-voting-system/main/app.py"
 
-# Interface Streamlit
-st.title("Système de Vote Décentralisé")
+# Récupère le contenu du fichier via l'URL de GitHub
+response = requests.get(url)
 
-# Affichage des candidats
-candidates = contract.functions.getCandidates().call()  # Exemple pour récupérer les candidats
-for candidate in candidates:
-    st.write(f"{candidate[0]} : {candidate[1]} votes")
+# Vérifie si la requête a fonctionné
+if response.status_code == 200:
+    st.code(response.text, language='python')  # Affiche le code Python depuis GitHub
+else:
+    st.error("Erreur de chargement du fichier GitHub.")
 
-# Choisir un candidat pour voter
-selected_candidate = st.selectbox("Choisissez un candidat", [candidate[0] for candidate in candidates])
-
-if st.button('Voter'):
-    account = w3.eth.accounts[0]  # Utiliser l'adresse de l'utilisateur (assurez-vous que l'utilisateur est connecté à un portefeuille comme MetaMask)
-    tx_hash = contract.functions.vote(selected_candidate).transact({'from': account})
-
-    st.write("Vote enregistré !", tx_hash)
-    st.write(f"Suivez la transaction sur [Etherscan](https://rinkeby.etherscan.io/tx/{tx_hash})")
-
-# Suivi de la transaction via le hash
-st.subheader("Suivi des résultats")
-tx_hash_input = st.text_input("Entrez votre hash de transaction pour suivre votre vote :")
-if tx_hash_input:
-    receipt = w3.eth.getTransactionReceipt(tx_hash_input)
-    if receipt:
-        st.write("Transaction confirmée !")
-    else:
-        st.write("Transaction en attente.")
