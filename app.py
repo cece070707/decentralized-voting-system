@@ -36,12 +36,26 @@ if voting_period_expired():
     percent_A = get_percentage(st.session_state.votes_A, total_votes)
     percent_B = get_percentage(st.session_state.votes_B, total_votes)
 
-    # Show the results
+    # Display the results with colors
     st.subheader("Vote Results")
     st.write(f"Total votes: {total_votes}")
-    st.write(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)")
-    st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
+    
+    if percent_A > percent_B:
+        st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
+        st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
+    else:
+        st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
+        st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
+
 else:
+    # Display countdown timer
+    now = datetime.datetime.now()
+    delta = st.session_state.start_date + datetime.timedelta(days=14) - now
+    if delta.days > 0:
+        st.write(f"Time left to vote: {delta.days} days, {delta.seconds // 3600} hours, {(delta.seconds // 60) % 60} minutes")
+    else:
+        st.write("The voting period has ended.")
+
     # Voting options (only if the user hasn't voted yet and voting is still open)
     if st.session_state.has_voted:
         st.write("You have already voted. Here are the current election results:")
@@ -52,8 +66,14 @@ else:
         # Show the results after voting
         st.subheader("Vote Results")
         st.write(f"Total votes: {total_votes}")
-        st.write(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)")
-        st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
+        
+        if percent_A > percent_B:
+            st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
+            st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
+        else:
+            st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
+            st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
+
     else:
         # If the user hasn't voted yet
         vote_option = st.radio(
@@ -79,11 +99,17 @@ else:
             # Display the results
             st.subheader("Vote Results")
             st.write(f"Total votes: {total_votes}")
-            st.write(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)")
-            st.write(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)")
+
+            if percent_A > percent_B:
+                st.markdown(f"<span style='color: red;'>Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)</span>", unsafe_allow_html=True)
+                st.markdown(f"Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)", unsafe_allow_html=True)
+            else:
+                st.markdown(f"Mr./Ms. A: {st.session_state.votes_A} votes ({percent_A:.2f}%)", unsafe_allow_html=True)
+                st.markdown(f"<span style='color: blue;'>Mr./Ms. B: {st.session_state.votes_B} votes ({percent_B:.2f}%)</span>", unsafe_allow_html=True)
 
             # Display a confirmation message for voting
             st.success("Thank you for voting!")
+
 
 
 
