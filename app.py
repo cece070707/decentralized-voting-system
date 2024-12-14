@@ -87,9 +87,11 @@ if voting_period_expired():
     labels = ["Mr./Ms. A", "Mr./Ms. B"]
     sizes = [st.session_state.votes_A, st.session_state.votes_B]
     colors = ['#ff9999','#66b3ff']
-    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, shadow=True)
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    st.pyplot()
+    fig, ax = plt.subplots()
+ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, shadow=True)
+ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+st.pyplot(fig)
+
 
 else:
     # Display countdown timer
