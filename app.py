@@ -4,7 +4,6 @@ import random
 import requests
 import matplotlib.pyplot as plt
 
-
 # NewsAPI key (replace 'YOUR_API_KEY' with your actual NewsAPI key)
 API_KEY = 'c9c5cccd294f4fb2a51ced5ed618de86'
 BASE_URL = 'https://newsapi.org/v2/everything'
