@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 # NewsAPI key (replace 'YOUR_API_KEY' with your actual NewsAPI key)
-API_KEY = 'c9c5cccd294f4fb2a51ced5ed618de86'
+API_KEY = '636b137650ef49a7acfa3259626ec54c'
 BASE_URL = 'https://newsapi.org/v2/everything'
 
 # Initializing vote variables (if not already initialized)
